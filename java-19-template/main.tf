@@ -56,21 +56,6 @@ resource "coder_agent" "main" {
   startup_script = <<EOT
     #!/bin/bash
 
-    apt-get update
-    DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
-      build-essential \
-      ca-certificates \
-      curl \
-      htop \
-      locales \
-      man \
-      python3 \
-      python3-pip \
-      software-properties-common \
-      unzip \
-      vim \
-      wget
-
     # home folder can be empty, so copying default bash settings
     if [ ! -f ~/.profile ]; then
       cp /etc/skel/.profile $HOME
@@ -132,7 +117,7 @@ resource "kubernetes_pod" "main" {
     }
     container {
       name    = "dev"
-      image   = "curlimages/curl"
+      image   = "ghcr.io/luca-heitmann/coder-templates/java-19-template:latest"
       command = ["sh", "-c", coder_agent.main.init_script]
       security_context {
         run_as_user = "1000"
