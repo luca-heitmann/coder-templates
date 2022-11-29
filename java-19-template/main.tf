@@ -81,13 +81,17 @@ resource "kubernetes_pod" "main" {
   }
   spec {
     service_account_name = "coder"
-    security_context {
-      run_as_user = "1000"
-      fs_group    = "1000"
+    container {
+      name  = "docker-sidecar"
+      image = "docker:dind"
+      security_context {
+        privileged = true
+      }
+      command = ["dockerd", "-H", "tcp://127.0.0.1:2375"]
     }
     container {
       name    = "dev"
-      image   = "ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.4"
+      image   = "ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.5"
       command = ["sh", "-c", coder_agent.main.init_script]
       security_context {
         run_as_user = "1000"
@@ -95,6 +99,10 @@ resource "kubernetes_pod" "main" {
       env {
         name  = "CODER_AGENT_TOKEN"
         value = coder_agent.main.token
+      }
+      env {
+        name  = "DOCKER_HOST"
+        value = "localhost:2375"
       }
       volume_mount {
         mount_path = "/workspace"

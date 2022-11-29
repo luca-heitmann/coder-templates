@@ -17,15 +17,20 @@ RUN apt-get update && \
       sudo \
       unzip \
       vim \
-      wget && \
-    # Install latest Git using their official PPA
-    add-apt-repository ppa:git-core/ppa && \
-    DEBIAN_FRONTEND="noninteractive" apt-get install -y git
+      wget
 
-RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add - && \
+RUN add-apt-repository ppa:git-core/ppa && \
+    # Add official docker apt repository
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    # Add official temurin apt repository
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add - && \
     echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    # Install git, docker and java
     apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" apt-get install -y temurin-19-jdk && \
+    DEBIAN_FRONTEND="noninteractive" apt-get install -y git temurin-19-jdk docker-ce-cli && \
     update-alternatives --config java
 
 ENV LANG en_US.UTF-8
@@ -35,7 +40,7 @@ RUN useradd coder \
       --shell=/bin/bash \
       --uid=1000 \
       --user-group && \
-    echo "coder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+    echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
 USER coder
 
