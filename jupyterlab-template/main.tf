@@ -15,15 +15,14 @@ variable "namespace" {
   type        = string
   default     = "coder-1"
   sensitive   = true
-  description = "The namespace to create workspaces in (must exist prior to creating workspaces)"
 }
 
-variable "home_disk_size" {
+variable "workspace_disk_size" {
   type        = number
-  description = "How large would you like your home volume to be (in GB)?"
   default     = 10
+  description = "How large would you like your workspace volume to be (in GB)?"
   validation {
-    condition     = var.home_disk_size >= 1
+    condition     = var.workspace_disk_size >= 1
     error_message = "Value must be greater than or equal to 1."
   }
 }
@@ -67,7 +66,7 @@ resource "kubernetes_persistent_volume_claim" "workspace" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "${var.home_disk_size}Gi"
+        storage = "${var.workspace_disk_size}Gi"
       }
     }
   }

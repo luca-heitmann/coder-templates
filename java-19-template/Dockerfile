@@ -19,6 +19,7 @@ RUN apt-get update && \
       vim \
       wget
 
+    # Add official git apt repository
 RUN add-apt-repository ppa:git-core/ppa && \
     # Add official docker apt repository
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \

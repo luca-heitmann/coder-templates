@@ -15,17 +15,22 @@ variable "namespace" {
   type        = string
   default     = "coder-1"
   sensitive   = true
-  description = "The namespace to create workspaces in (must exist prior to creating workspaces)"
 }
 
-variable "home_disk_size" {
+variable "workspace_disk_size" {
   type        = number
-  description = "How large would you like your home volume to be (in GB)?"
-  default     = 10
+  default     = 15
+  description = "How large would you like your workspace volume to be (in GB)?"
   validation {
-    condition     = var.home_disk_size >= 1
+    condition     = var.workspace_disk_size >= 1
     error_message = "Value must be greater than or equal to 1."
   }
+}
+
+variable "dotfiles_uri" {
+  type        = string
+  default     = "https://github.com/luca-heitmann/dotfiles.git"
+  description = "Dotfiles repo"
 }
 
 data "coder_workspace" "me" {}
@@ -36,7 +41,7 @@ resource "coder_agent" "main" {
   startup_script = <<EOT
     #!/bin/bash
 
-    # start code-server
+    coder dotfiles -y ${var.dotfiles_uri}
     code-server --disable-telemetry --auth none --port 13337 &
   EOT
 }
@@ -67,7 +72,7 @@ resource "kubernetes_persistent_volume_claim" "workspace" {
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
-        storage = "${var.home_disk_size}Gi"
+        storage = "${var.workspace_disk_size}Gi"
       }
     }
   }
