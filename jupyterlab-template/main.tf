@@ -36,23 +36,23 @@ resource "coder_agent" "main" {
   startup_script = <<EOT
     #!/bin/bash
 
-    # start code-server
-    code-server --disable-telemetry --auth none --port 13337 &
+    # start juypter lab
+    jupyter lab --ServerApp.token='' --ip='*' --notebook-dir /workspace &
   EOT
 }
 
-resource "coder_app" "code-server" {
+resource "coder_app" "jupyter" {
   agent_id     = coder_agent.main.id
-  slug         = "code-server"
-  display_name = "code-server"
-  icon         = "/icon/code.svg"
-  url          = "http://localhost:13337?folder=/workspace"
-  subdomain    = true
+  slug         = "jupyter"
+  display_name = "JupyterLab"
+  url          = "http://localhost:8888"
+  icon         = "/icon/jupyter.svg"
   share        = "owner"
+  subdomain    = true
 
   healthcheck {
-    url       = "http://localhost:13337/healthz"
-    interval  = 3
+    url       = "http://localhost:8888/healthz"
+    interval  = 5
     threshold = 10
   }
 }
@@ -87,7 +87,7 @@ resource "kubernetes_pod" "main" {
     }
     container {
       name    = "dev"
-      image   = "ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.4"
+      image   = "ghcr.io/luca-heitmann/coder-templates/jupyterlab-template:v1.0.1"
       command = ["sh", "-c", coder_agent.main.init_script]
       security_context {
         run_as_user = "1000"
