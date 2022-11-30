@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-image="ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.5"
+image="ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.6"
 template_name="java-19"
 
 docker build --progress plain --platform linux/arm64 -t "$image" .

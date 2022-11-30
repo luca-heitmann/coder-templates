@@ -41,6 +41,7 @@ resource "coder_agent" "main" {
   startup_script = <<EOT
     #!/bin/bash
 
+    sudo chown -R coder:coder /workspace
     coder dotfiles -y ${var.dotfiles_uri}
     code-server --disable-telemetry --auth none --port 13337 &
   EOT
@@ -96,7 +97,7 @@ resource "kubernetes_pod" "main" {
     }
     container {
       name    = "dev"
-      image   = "ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.5"
+      image   = "ghcr.io/luca-heitmann/coder-templates/java-19-template:v1.0.6"
       command = ["sh", "-c", coder_agent.main.init_script]
       security_context {
         run_as_user = "1000"

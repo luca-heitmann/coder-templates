@@ -35,7 +35,7 @@ resource "coder_agent" "main" {
   startup_script = <<EOT
     #!/bin/bash
 
-    # start juypter lab
+    sudo chown -R coder:coder /workspace
     jupyter lab --ServerApp.token='' --ip='*' --notebook-dir /workspace &
   EOT
 }
@@ -86,7 +86,7 @@ resource "kubernetes_pod" "main" {
     }
     container {
       name    = "dev"
-      image   = "ghcr.io/luca-heitmann/coder-templates/jupyterlab-template:v1.0.1"
+      image   = "ghcr.io/luca-heitmann/coder-templates/jupyterlab-template:v1.0.2"
       command = ["sh", "-c", coder_agent.main.init_script]
       security_context {
         run_as_user = "1000"

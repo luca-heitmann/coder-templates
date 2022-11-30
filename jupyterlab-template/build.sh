@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-image="ghcr.io/luca-heitmann/coder-templates/jupyterlab-template:v1.0.1"
+image="ghcr.io/luca-heitmann/coder-templates/jupyterlab-template:v1.0.2"
 template_name="jupyterlab"
 
 docker build --progress plain --platform linux/arm64 -t "$image" .
