@@ -1,5 +1,5 @@
 ---
-name: Java 19
-description: Development environment with VSCode, JDK19, vim and basic utils
-tags: [vscode, java]
+name: DevOps
+description: Development environment with VSCode, Ansbile, Terraform and basic utils
+tags: [devops, ansible, terraform]
 ---
